@@ -1,3 +1,4 @@
+from itertools import combinations_with_replacement
 from utils import factorial, power_6
 
 import dice
@@ -46,19 +47,10 @@ class Throw:
         d = sum([[i] * c for i, c in enumerate(self.histogram)], [])
         return f"<Throw {dice.to_string(d)} ({self.probability})>"
 
-# We could have used a generator for listing "all dice", but I'd rather have the lists
+# We could have used a generator directly, but I'd rather have the lists
 # ready-generated so as to loop through them quickly.
 
 def generate_(num_dice):
-    all = []
-    dice = [0] * num_dice
-    while True:
-        all.append(Throw(dice))
-        index = num_dice - 1
-        while index >= 0 and dice[index] == 5:
-            index -= 1
-        if index < 0:
-            return all
-        dice[index:] = [dice[index] + 1] * (num_dice - index)
+    return [Throw(dice) for dice in combinations_with_replacement(range(6), num_dice)]
 
 ALL_THROWS_ = [generate_(i) for i in range(dice.MAX_NUM + 1)]
